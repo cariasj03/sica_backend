@@ -28,3 +28,6 @@ app.get("/", (req, res) => {
 
 const unitsRouter = require("./routes/units_route");
 app.use(unitsRouter);
+
+const assetsRouter = require("./routes/assets_route");
+app.use(assetsRouter);
