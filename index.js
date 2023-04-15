@@ -17,12 +17,12 @@ app.use(express.json());
 app.use(cors({}));
 
 //App listening
-app.listen(8000, () => {
+app.listen(8000, function ()  {
   console.log("Listening to requests on port 8000!");
 });
 
 //Main route
-app.get("/", (req, res) => {
+app.get("/", function(req, res)  {
   res.send("Hola mundo!");
 });
 

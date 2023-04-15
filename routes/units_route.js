@@ -8,12 +8,23 @@ const app = express();
 app.use(express.json());
 
 //Adding a new unit
-app.post("/units", async (req, res) => {
+app.post("/units", async function (req, res) {
+
+  console.log("Atendiendo la ruta POST /units", res);
+
+  if(!request.body){
+    console.error("No se envio el body en la peticion");
+    response.status(500).send("No se envio el body en la peticion");
+    return;
+  }
+
+  console.log("Creando unidad con datos:", request.body)
   const unit = new unitsModel(req.body);
 
   try {
-    console.log("Atendiendo la ruta POST /units");
 
+    console.log("Guardando el usuario:",unit);
+    // Unit is created here
     await unit.save();
     console.log("Unidad creada:", unit);
 
@@ -24,10 +35,11 @@ app.post("/units", async (req, res) => {
   }
 });
 
-app.get("/units", async (req, res) => {
+app.get("/units", async function(req, res) {
+  console.log("Atendiendo a la ruta GET /units:",req)
   try {
     const units = await unitsModel.find({});
-    res.send(units);
+    res.send(200).send(units);
   } catch (error) {
     res.status(500).send(error);
   }
