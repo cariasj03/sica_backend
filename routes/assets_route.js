@@ -8,22 +8,12 @@ const app = express();
 app.use(express.json());
 
 //Adding a new asset
-app.post("/assets", async function (req, res){
-  console.log("Atendiendo la ruta POST /assets", res);
-
-  if(!request.body){
-    console.error("No se envio el body en la peticion");
-    response.status(500).send("No se envio el body en la peticion");
-    return;
-  }
-
-  console.log("Creando activo con datos:", request.body);
-
+app.post("/assets", async (req, res) => {
   const asset = new assetsModel(req.body);
 
   try {
-    console.log("Guardando el activo:", asset)
-    // Asset is created here
+    console.log("Atendiendo la ruta POST /assets");
+
     await asset.save();
     console.log("Activo creado:", asset);
 
@@ -34,14 +24,10 @@ app.post("/assets", async function (req, res){
   }
 });
 
-
-//Finding an asset
-app.get("/assets", async function (req, res) {
-  console.log("Atendiendo a la ruta GET /assets:",req)
-
+app.get("/assets", async (req, res) => {
   try {
     const assets = await assetsModel.find({});
-    res.send(200).send(assets);
+    res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
