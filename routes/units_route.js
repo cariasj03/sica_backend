@@ -1,21 +1,23 @@
 //Requiring modules
-const fs = require("fs");
-const express = require("express");
-const unitsModel = require("../models/units_model");
+const express = require('express');
+const unitsModel = require('../models/units_model');
+const cors = require('cors');
 
 //Creating app
 const app = express();
 app.use(express.json());
+app.use(cors({}));
 
 //Adding a new unit
-app.post("/units", async (req, res) => {
+app.post('/units', async (req, res) => {
   const unit = new unitsModel(req.body);
 
   try {
-    console.log("Atendiendo la ruta POST /units");
+    console.log('Atendiendo la ruta POST /units');
 
     await unit.save();
-    console.log("Unidad creada:", unit);
+
+    console.log('Unidad creada', unit);
 
     res.send(unit);
   } catch (error) {
@@ -24,10 +26,26 @@ app.post("/units", async (req, res) => {
   }
 });
 
-app.get("/units", async (req, res) => {
+//Fetching all units
+app.get('/units', async (req, res) => {
   try {
+    console.log('Atendiendo la ruta GET /units');
     const units = await unitsModel.find({});
     res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching an unit by id
+app.get('/units/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    console.log(`Atendiendo la ruta GET /units/${id}`);
+    const unitById = await unitsModel.find({ id: id });
+    console.log(unitById);
+
+    res.status(200).send(unitById);
   } catch (error) {
     res.status(500).send(error);
   }
