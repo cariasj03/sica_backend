@@ -28,9 +28,9 @@ app.post("/units", async function (req, res) {
     await unit.save();
     console.log("Unidad creada:", unit);
 
-    res.status(201).send(unit);
+    res.send(unit);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send(error);
   }
 });
@@ -39,7 +39,7 @@ app.get("/units", async function(req, res) {
   console.log("Atendiendo a la ruta GET /units:",req)
   try {
     const units = await unitsModel.find({});
-    res.send(200).send(units);
+    res.send(units);
   } catch (error) {
     res.status(500).send(error);
   }

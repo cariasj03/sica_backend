@@ -29,7 +29,7 @@ app.post("/assets", async function (req, res){
 
     res.status(201).send(asset);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send(error);
   }
 });
