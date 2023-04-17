@@ -2,6 +2,7 @@
 const express = require('express');
 const unitsModel = require('../models/units_model');
 const cors = require('cors');
+const nextId = require('../bl/next_id');
 
 //Creating app
 const app = express();
@@ -10,16 +11,23 @@ app.use(cors({}));
 
 //Adding a new unit
 app.post('/units', async (req, res) => {
-  const unit = new unitsModel(req.body);
-
   try {
+    //Adding id and creationDate to the unit
+    const unitJson = req.body;
+    const nextUnitId = await nextId.getUnitId();
+    unitJson.id = nextUnitId;
+    unitJson.creationDate = new Date();
+
+    //Creating unit model with new unit info
+    const unit = new unitsModel(unitJson);
+
     console.log('Atendiendo la ruta POST /units');
 
     await unit.save();
 
     console.log('Unidad creada', unit);
 
-    res.send(unit);
+    res.status(201).send(unit);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
