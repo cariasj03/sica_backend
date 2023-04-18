@@ -13,7 +13,7 @@ app.post('/users', async (req, res) => {
   const user = new userModel(req.body);
 
   try {
-    console.log('Atendiendo la ruta POST /users',req);
+    console.log('Attending the POST route: /users', req);
 
     await user.save();
 
@@ -29,7 +29,7 @@ app.post('/users', async (req, res) => {
 //Fetching all users
 app.get('/users', async (req, res) => {
   try {
-    console.log('Atendiendo la ruta GET /users');
+    console.log('Attending the GET route: /users');
     const user = await userModel.find({});
     res.send(user);
   } catch (error) {
@@ -41,7 +41,7 @@ app.get('/users', async (req, res) => {
 app.get('/users/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    console.log(`Atendiendo la ruta GET /users/${id}`);
+    console.log(`Attending the GET route: /users/${id}`);
     const usertById = await userModel.find({ id: id });
     console.log(userById);
 

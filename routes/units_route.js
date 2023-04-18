@@ -21,7 +21,7 @@ app.post('/units', async (req, res) => {
     //Creating unit model with new unit info
     const unit = new unitsModel(unitJson);
 
-    console.log('Atendiendo la ruta POST /units');
+    console.log('Attending the POST route: /units');
 
     await unit.save();
 
@@ -34,11 +34,133 @@ app.post('/units', async (req, res) => {
   }
 });
 
-//Fetching all units
-app.get('/units', async (req, res) => {
+//Updating a unit
+app.post('/units/:id', async (req, res) => {
   try {
-    console.log('Atendiendo la ruta GET /units');
-    const units = await unitsModel.find({});
+    const id = req.params.id;
+    const unitUpdatedInfo = req.body;
+
+    console.log(`Attending the POST route: /units/${id}`);
+
+    const result = await unitsModel
+      .findOneAndUpdate({ id: id }, unitUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Unidad actualizada', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all units by id
+app.get('/units/sort/by-id', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /units/sort/by-id');
+    const units = await unitsModel.find().sort({ id: 1 }).exec();
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all units sorted by name
+app.get('/units/sort/by-name', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /units/sort/by-name');
+    const units = await unitsModel.find().sort({ name: 1 }).exec();
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all units sorted by creation date
+app.get('/units/sort/by-creationDate', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /units/sort/by-creationDate');
+    const units = await unitsModel.find().sort({ creationDate: 1 }).exec();
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all units sorted by province
+app.get('/units/sort/by-province', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /units/sort/by-province');
+    const units = await unitsModel.find().sort({ province: 1 }).exec();
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all units sorted by canton
+app.get('/units/sort/by-canton', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /units/sort/by-canton');
+    const units = await unitsModel.find().sort({ canton: 1 }).exec();
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching units in a specific province
+app.get('/units/filter/province/:province', async (req, res) => {
+  try {
+    const province = req.params.province;
+    console.log(`Attending the GET route: /units/filter/province/${province}`);
+    const units = await unitsModel.find({ province: province });
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching units in a specific canton
+app.get('/units/filter/province/:province/canton/:canton', async (req, res) => {
+  try {
+    const province = req.params.province;
+    const canton = req.params.canton;
+    console.log(
+      `Attending the GET route: /units/filter/province/${province}/canton/${canton}`
+    );
+    const units = await unitsModel.find({ province: province, canton: canton });
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Searching units by id
+app.get('/units/search/by-id/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const regex = new RegExp(`(?=.*${id})`, 'i');
+
+    console.log(`Attending the GET route: /units/search/${id}`);
+    const units = await unitsModel.find({ id: { $regex: regex } });
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Searching units by name
+app.get('/units/search/by-name/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    const regex = new RegExp(`^(?=.*${name})`, 'i');
+
+    console.log(`Attending the GET route: /units/search/${name}`);
+    const units = await unitsModel.find({ name: { $regex: regex } });
     res.send(units);
   } catch (error) {
     res.status(500).send(error);
@@ -47,9 +169,9 @@ app.get('/units', async (req, res) => {
 
 //Fetching an unit by id
 app.get('/units/:id', async (req, res) => {
-  const id = req.params.id;
   try {
-    console.log(`Atendiendo la ruta GET /units/${id}`);
+    const id = req.params.id;
+    console.log(`Attending the GET route: /units/${id}`);
     const unitById = await unitsModel.find({ id: id });
     console.log(unitById);
 
