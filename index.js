@@ -2,7 +2,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const nextId = require('./bl/next_id');
 
 //Connecting to database
 mongoose
@@ -31,8 +30,14 @@ app.get('/', (req, res) => {
 const unitsRouter = require('./routes/units_route');
 app.use(unitsRouter);
 
+//Assets route
 const assetsRouter = require('./routes/assets_route');
 app.use(assetsRouter);
 
+//Users route
 const usersRouter = require('./routes/users_route');
 app.use(usersRouter);
+
+//Signin route
+const signinRouter = require('./routes/signin_route');
+app.use(signinRouter);
