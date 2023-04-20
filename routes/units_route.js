@@ -23,6 +23,8 @@ app.post('/units', async (req, res) => {
 
     console.log('Attending the POST route: /units');
 
+    console.log(unitJson);
+    console.log(unit);
     await unit.save();
 
     console.log('Unidad creada', unit);
@@ -146,7 +148,10 @@ app.get('/units/search/by-id/:id', async (req, res) => {
     const regex = new RegExp(`(?=.*${id})`, 'i');
 
     console.log(`Attending the GET route: /units/search/${id}`);
-    const units = await unitsModel.find({ id: { $regex: regex } });
+    const units = await unitsModel
+      .find({ id: { $regex: regex } })
+      .sort({ id: 1 })
+      .exec();
     res.send(units);
   } catch (error) {
     res.status(500).send(error);
@@ -160,7 +165,10 @@ app.get('/units/search/by-name/:name', async (req, res) => {
     const regex = new RegExp(`^(?=.*${name})`, 'i');
 
     console.log(`Attending the GET route: /units/search/${name}`);
-    const units = await unitsModel.find({ name: { $regex: regex } });
+    const units = await unitsModel
+      .find({ name: { $regex: regex } })
+      .sort({ id: 1 })
+      .exec();
     res.send(units);
   } catch (error) {
     res.status(500).send(error);
