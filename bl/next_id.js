@@ -18,7 +18,6 @@ const getNextId = (num) => {
 //Function to get the unit id
 exports.getUnitId = async () => {
   try {
-    const units = await fetch('http://127.0.0.1:8000/units/sort/by-id');
     const units = await fetch("http://127.0.0.1:8000/units/sort/by-id");
     const unitsList = await units.json();
     const unitIds = unitsList.map((unit) => {
