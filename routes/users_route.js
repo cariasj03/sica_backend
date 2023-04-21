@@ -12,12 +12,26 @@ app.use(cors({}));
 app.post('/users', async (req, res) => {
   const user = new userModel(req.body);
 
+  if (!req.body) {
+    console.error("No se envío el body en la petición.");
+    res.status(500).send("No se envío el body en la petición.");
+    return;
+  }
+
+  // Generamos la contraseña
+  const randomPassword = Math.random().toString(36).slice(-8);
+
+  // Agregamos la contraseña al body
+  req.body.password = randomPassword;
+
+  console.log("Creando usuario con datos:", req.body);
+
   try {
     console.log('Attending the POST route: /users', req);
 
     await user.save();
 
-    console.log('Unidad creada', user);
+    console.log('Usuario creado', user);
 
     res.send(user);
   } catch (error) {
