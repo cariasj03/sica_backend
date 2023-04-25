@@ -36,7 +36,7 @@ app.post('/units', async (req, res) => {
   }
 });
 
-//Updating a unit
+//Updating an unit
 app.post('/units/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -64,7 +64,7 @@ app.get('/units/sort/by-id', async (req, res) => {
   try {
     console.log('Attending the GET route: /units/sort/by-id');
     const units = await unitsModel.find().sort({ id: 1 }).exec();
-    res.send(units);
+    res.status(200).send(units);
   } catch (error) {
     res.status(500).send(error);
   }

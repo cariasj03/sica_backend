@@ -13,8 +13,8 @@ app.post('/users', async (req, res) => {
   const user = new userModel(req.body);
 
   if (!req.body) {
-    console.error("No se envío el body en la petición.");
-    res.status(500).send("No se envío el body en la petición.");
+    console.error('No se envío el body en la petición.');
+    res.status(500).send('No se envío el body en la petición.');
     return;
   }
 
@@ -24,7 +24,7 @@ app.post('/users', async (req, res) => {
   // Agregamos la contraseña al body
   req.body.password = randomPassword;
 
-  console.log("Creando usuario con datos:", req.body);
+  console.log('Creando usuario con datos:', req.body);
 
   try {
     console.log('Attending the POST route: /users', req);
@@ -34,6 +34,29 @@ app.post('/users', async (req, res) => {
     console.log('Usuario creado', user);
 
     res.send(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//Updating an user
+app.post('/users/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userUpdatedInfo = req.body;
+
+    console.log(`Attending the POST route: /users/${id}`);
+
+    const result = await userModel
+      .findOneAndUpdate({ id: id }, userUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Usuario actualizada', result);
+
+    res.status(201).send(result);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
