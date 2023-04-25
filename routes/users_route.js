@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors({}));
 
 //Adding a new user
-app.post('/users', async (req, res) => {
+app.post('/users/signup', async (req, res) => {
   const user = new userModel(req.body);
 
   if (!req.body) {
@@ -21,13 +21,21 @@ app.post('/users', async (req, res) => {
   // Generamos la contraseña
   const randomPassword = Math.random().toString(36).slice(-8);
 
+  // Generamos la fecha de creación
+  const currentDate = new Date();
+
   // Agregamos la contraseña al body
   req.body.password = randomPassword;
 
+  // Agregamos la fecha de creación al body
+  req.body.creationDate = currentDate;
+
+  
+  
   console.log('Creando usuario con datos:', req.body);
 
   try {
-    console.log('Attending the POST route: /users', req);
+    console.log('Attending the POST route: /users/signup', req);
 
     await user.save();
 
