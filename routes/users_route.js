@@ -135,4 +135,79 @@ app.get('/users/sort/by-unit', async (req, res) => {
   }
 });
 
+//Fetching users of a specific unit
+app.get('/users/filter/unit/:unit', async (req, res) => {
+  try {
+    const unit = req.params.unit;
+    console.log(`Attending the GET route: /users/filter/unit/${unit}`);
+    const users = await userModel.find({
+      $and: [{ isApproved: true }, { unit: unit }],
+    });
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Searching users by id
+app.get('/users/search/by-id/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const regex = new RegExp(`(?=.*${id})`, 'i');
+
+    console.log(`Attending the GET route: /users/search/by-id/${id}`);
+    const users = await userModel
+      .find({ $and: [{ isApproved: true }, { id: { $regex: regex } }] })
+      .sort({ id: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Searching users by name
+app.get('/users/search/by-name/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    const regex = new RegExp(`(?=.*${name})`, 'i');
+
+    console.log(`Attending the GET route: /users/search/by-name/${name}`);
+    const users = await userModel
+      .find({
+        $and: [
+          { isApproved: true },
+          {
+            $or: [
+              { firstName: { $regex: regex } },
+              { lastName: { $regex: regex } },
+            ],
+          },
+        ],
+      })
+      .sort({ firstName: 1, lastName: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Searching users by email
+app.get('/users/search/by-email/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    const regex = new RegExp(`(?=.*${email})`, 'i');
+
+    console.log(`Attending the GET route: /users/search/by-email/${email}`);
+    const users = await userModel
+      .find({ $and: [{ isApproved: true }, { email: { $regex: regex } }] })
+      .sort({ email: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 module.exports = app;
