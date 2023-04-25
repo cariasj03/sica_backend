@@ -45,6 +45,10 @@ const userSchema = mongoose.Schema({
     type: Date,
     required: true,
   },
+  isApproved: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const User = mongoose.model('User', userSchema);

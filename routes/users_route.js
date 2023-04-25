@@ -25,13 +25,11 @@ app.post('/users/signup', async (req, res) => {
   const currentDate = new Date();
 
   // Agregamos la contraseña al body
-  req.body.password = randomPassword;
+  user.password = randomPassword;
 
   // Agregamos la fecha de creación al body
-  req.body.creationDate = currentDate;
+  user.creationDate = currentDate;
 
-  
-  
   console.log('Creando usuario con datos:', req.body);
 
   try {
@@ -75,7 +73,7 @@ app.post('/users/:id', async (req, res) => {
 app.get('/users', async (req, res) => {
   try {
     console.log('Attending the GET route: /users');
-    const user = await userModel.find({});
+    const user = await userModel.find({ isApproved: true });
     res.send(user);
   } catch (error) {
     res.status(500).send(error);
@@ -90,6 +88,48 @@ app.get('/users/:id', async (req, res) => {
     const userById = await userModel.find({ id: id });
 
     res.status(200).send(userById);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all users sorted by name
+app.get('/users/sort/by-name', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /users/sort/by-name');
+    const users = await userModel
+      .find({ isApproved: true })
+      .sort({ firstName: 1, lastName: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all users sorted by email
+app.get('/users/sort/by-email', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /users/sort/by-email');
+    const users = await userModel
+      .find({ isApproved: true })
+      .sort({ email: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all users sorted by unit
+app.get('/users/sort/by-unit', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /users/sort/by-unit');
+    const users = await userModel
+      .find({ isApproved: true })
+      .sort({ unit: 1 })
+      .exec();
+    res.send(users);
   } catch (error) {
     res.status(500).send(error);
   }
