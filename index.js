@@ -41,3 +41,7 @@ app.use(usersRouter);
 //Signin route
 const signinRouter = require('./routes/signin_route');
 app.use(signinRouter);
+
+//User requests route
+const userRequestsRouter = require('./routes/user_requests_route');
+app.use(userRequestsRouter);

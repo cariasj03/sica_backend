@@ -26,21 +26,28 @@ app.post('/signin', async function (req, res) {
     const { email, password } = req.body;
 
     console.log(`Searching for the user with the email: ${email}`);
-    const userById = await usersModel.findOne({ email: email });
-    if (!userById) {
-      response.status = 'User not found';
+    const userByEmail = await usersModel.findOne({ email: email });
+    if (!userByEmail) {
+      response.status = 'El usuario no se encuentra registrado.';
       res.status(404).send(response);
       return;
     }
 
-    if (userById.password !== password) {
-      response.status = 'Wrong password';
+    if (userByEmail.isApproved === false) {
+      response.status =
+        'La cuenta de este usuario no ha sido aprobada por una jefatura.';
+      res.status(403).send(response);
+      return;
+    }
+
+    if (userByEmail.password !== password) {
+      response.status = 'La contraseña ingresada es incorrecta.';
       res.status(401).send(response);
       return;
     }
 
-    console.log(`User found: ${userById}`);
-    res.status(200).send(userById);
+    console.log(`User found: ${userByEmail}`);
+    res.status(200).send(userByEmail);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
