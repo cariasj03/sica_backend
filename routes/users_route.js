@@ -79,7 +79,7 @@ app.post('/users/:id', async (req, res) => {
       })
       .exec();
 
-    console.log('Usuario actualizada', result);
+    console.log('Usuario actualizado', result);
 
     res.status(201).send(result);
   } catch (error) {
