@@ -35,8 +35,10 @@ app.post("/assets", async (req, res) => {
   }
 });
 
+//Fetching all assets
 app.get("/assets", async (req, res) => {
   try {
+    console.log('Attending the GET route: /assets');
     const assets = await assetsModel.find({});
     res.send(assets);
   } catch (error) {
@@ -48,12 +50,13 @@ app.get("/assets", async (req, res) => {
 app.get("/assets/sort/by-id", async (req, res) => {
   try {
     console.log("Attending the GET route: /assets/sort/by-id");
-    const assets = await assetsModel.find().sort({ id: 1 }).exec();
+    const assets = await assetsModel.find({isApproved: true}).sort({ id: 1 }).exec();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
 
 module.exports = app;
 

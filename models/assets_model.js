@@ -29,6 +29,10 @@ const assetSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isApproved: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 const Asset = mongoose.model("Asset", assetSchema);
