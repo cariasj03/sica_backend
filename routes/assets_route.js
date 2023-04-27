@@ -56,3 +56,42 @@ app.get("/assets/sort/by-id", async (req, res) => {
 });
 
 module.exports = app;
+
+//Fetching an unit by id
+app.get("/assets/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(`Attending the GET route: /assets/${id}`);
+    const assetById = await assetsModel.find({ id: id });
+    console.log(assetById);
+
+    res.status(200).send(assetById);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Updating an unit
+app.post('/assets/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const assetUpdatedInfo = req.body;
+
+    console.log(`Attending the POST route: /assets/${id}`);
+
+    const result = await assetsModel
+      .findOneAndUpdate({ id: id }, assetUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Activo actualizado', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+module.exports = app;
