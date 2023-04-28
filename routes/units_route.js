@@ -114,6 +114,22 @@ app.get('/units/sort/by-canton', async (req, res) => {
   }
 });
 
+
+
+//Fetching units of a specific unit
+app.get('/units/filter/name/:name', async (req, res) => {
+  try {
+    const unit = req.params.name;
+    console.log(`Attending the GET route: /units/filter/name/${unit}`);
+    const units = await usersModel.find({
+      $and: [{ name: unit }],
+    });
+    res.send(units);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 //Fetching units in a specific province
 app.get('/units/filter/province/:province', async (req, res) => {
   try {

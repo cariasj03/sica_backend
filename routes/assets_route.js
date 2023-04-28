@@ -46,19 +46,85 @@ app.get("/assets", async (req, res) => {
   }
 });
 
-//Fetching all assets by id
-app.get("/assets/sort/by-id", async (req, res) => {
+//Searching assets by id
+app.get('/assets/search/by-id/:id', async (req, res) => {
   try {
-    console.log("Attending the GET route: /assets/sort/by-id");
-    const assets = await assetsModel.find({isApproved: true}).sort({ id: 1 }).exec();
+    const id = req.params.id;
+    const regex = new RegExp(`(?=.*${id})`, 'i');
+
+    console.log(`Attending the GET route: /assets/search/by-id/${id}`);
+    const assets = await assetsModel
+      .find({ $and: [{ id: { $regex: regex } }] })
+      .sort({ id: 1 })
+      .exec();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
+//Searching assets by name
+app.get('/assets/search/by-name/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    const regex = new RegExp(`(?=.*${name})`, 'i');
 
-module.exports = app;
+    console.log(`Attending the GET route: /assets/search/by-name/${name}`);
+    const asse = await assetsModel
+      .find({ name: { $regex: regex } })
+      .sort({ name:1 })
+      .exec();
+    res.send(asse);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all assets by id
+app.get("/assets/sort/by-id", async (req, res) => {
+  try {
+    console.log("Attending the GET route: /assets/sort/by-id");
+    const assets = await assetsModel.find().sort({ id: 1 }).exec();
+    res.send(assets);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all assets sorted by name
+app.get('/assets/sort/by-name', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /assets/sort/by-name');
+    const assets = await assetsModel.find().sort({ name: 1 }).exec();
+    res.send(assets);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all assets sorted by unit
+app.get('/assets/sort/by-unit', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /assets/sort/by-unit');
+    const assets = await assetsModel
+      .find({ unit: 1 })
+      .exec();
+    res.send(assets);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all assets sorted by status
+app.get('/assets/sort/by-status', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /assets/sort/by-status');
+    const assets = await assetsModel.find({ status: 1 }).exec();
+    res.send(assets);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 //Fetching an unit by id
 app.get("/assets/:id", async (req, res) => {
