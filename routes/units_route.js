@@ -119,10 +119,10 @@ app.get('/units/sort/by-canton', async (req, res) => {
 //Fetching units of a specific unit
 app.get('/units/filter/name/:name', async (req, res) => {
   try {
-    const unit = req.params.name;
-    console.log(`Attending the GET route: /units/filter/name/${unit}`);
-    const units = await usersModel.find({
-      $and: [{ name: unit }],
+    const name = req.params.name;
+    console.log(`Attending the GET route: /units/filter/name/${name}`);
+    const units = await unitsModel.find({
+      $and: [{ name: name }],
     });
     res.send(units);
   } catch (error) {

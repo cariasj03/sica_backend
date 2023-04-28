@@ -105,10 +105,9 @@ app.get('/assets/sort/by-name', async (req, res) => {
 //Fetching all assets sorted by unit
 app.get('/assets/sort/by-unit', async (req, res) => {
   try {
+    const unit = req.params.unit;
     console.log('Attending the GET route: /assets/sort/by-unit');
-    const assets = await assetsModel
-      .find({ unit: 1 })
-      .exec();
+    const assets = await assetsModel.find().sort({ unit: unit });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -118,8 +117,9 @@ app.get('/assets/sort/by-unit', async (req, res) => {
 //Fetching all assets sorted by status
 app.get('/assets/sort/by-status', async (req, res) => {
   try {
+    const status = req.params.status;
     console.log('Attending the GET route: /assets/sort/by-status');
-    const assets = await assetsModel.find({ status: 1 }).exec();
+    const assets = await assetsModel.find().sort({ status: status });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -135,6 +135,20 @@ app.get("/assets/:id", async (req, res) => {
     console.log(assetById);
 
     res.status(200).send(assetById);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching units of a specific unit
+app.get('/assets/filter/unit/:unit', async (req, res) => {
+  try {
+    const unit = req.params.unit;
+    console.log(`Attending the GET route: /assets/filter/name/${unit}`);
+    const assets = await assetsModel.find({
+      $and: [{ unit: unit }],
+    });
+    res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
