@@ -1,7 +1,6 @@
 //Requiring modules
 const express = require("express");
-const assetsModel = require("../models/assets_model");
-const nextId = require("../bl/next_id");
+const assetsModel = require("../models/assets_model.js");
 const cors = require("cors");
 
 //Creating app
@@ -19,12 +18,40 @@ app.get("/assets-request", async (req, res) => {
       res.status(500).send(error);
     }
   });
+
+  //Deleting an asset
+app.post('/assets-requests/delete/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    console.log(`Attending the POST route: /assets-requests/delete/${id}`);
+
+    const result = await assetsModel
+      .findOneAndDelete(
+        { id: id },
+        {
+          new: true,
+        }
+      )
+      .exec();
+
+    console.log('Activo eliminado', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+})
   
   //Fetching all assets by id
   app.get("/assets-request/sort/by-id", async (req, res) => {
     try {
       console.log("Attending the GET route: /assets-request/sort/by-id");
-      const assets = await assetsModel.find({isApproved: false}).sort({ id: 1 }).exec();
+      const assets = await assetsModel
+      .find({isApproved: false})
+      .sort({ id: 1 })
+      .exec();
       res.send(assets);
     } catch (error) {
       res.status(500).send(error);
@@ -35,7 +62,10 @@ app.get("/assets-request", async (req, res) => {
   app.get('/assets-request/sort/by-name', async (req, res) => {
     try {
       console.log('Attending the GET route: /assets-request/sort/by-name');
-      const assets = await assetsModel.find({ isApproved: false }).sort({ name: 1 }).exec();
+      const assets = await assetsModel
+      .find({ isApproved: false })
+      .sort({ name: 1 })
+      .exec();
       res.send(assets);
     } catch (error) {
       res.status(500).send(error);
@@ -75,7 +105,7 @@ app.get("/assets-request", async (req, res) => {
       const unit = req.params.unit;
       console.log(`Attending the GET route: /assets-request/filter/unit/${unit}`);
       const assets = await assetsModel.find({
-        $and: [{ isApproved: false }, { unit: 1 }],
+        $and: [{ isApproved: false }, { unit: unit }],
       });
       res.send(assets);
     } catch (error) {
