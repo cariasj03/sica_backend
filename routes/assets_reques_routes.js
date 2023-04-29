@@ -21,9 +21,9 @@ app.get("/assets-request", async (req, res) => {
   });
   
   //Fetching all assets by id
-  app.get("/assets/sort/by-id", async (req, res) => {
+  app.get("/assets-request/sort/by-id", async (req, res) => {
     try {
-      console.log("Attending the GET route: /assets/sort/by-id");
+      console.log("Attending the GET route: /assets-request/sort/by-id");
       const assets = await assetsModel.find({isApproved: false}).sort({ id: 1 }).exec();
       res.send(assets);
     } catch (error) {

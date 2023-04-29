@@ -16,6 +16,7 @@ app.post("/assets", async (req, res) => {
     const assetJson = req.body;
     const nextAssetId = await nextId.getAssetId();
     assetJson.id = nextAssetId;
+    assetJson.isApproved = false;
 
     //Creating asset model with new asset info
     const asset = new assetsModel(assetJson);
