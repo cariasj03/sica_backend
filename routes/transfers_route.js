@@ -42,4 +42,41 @@ app.get("/transfers", async (req, res) => {
   }
 });
 
+//Fetching an unit by id
+app.get("/transfers/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(`Attending the GET route: /transfers/${id}`);
+    const transfersByAssetById = await transfersModel.find({ id: id });
+    console.log(transfersByAssetById);
+
+    res.status(200).send(transfersByAssetById);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Updating an unit
+app.post('/transfers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const assetUpdatedInfo = req.body;
+
+    console.log(`Attending the POST route: /transfers/${id}`);
+
+    const result = await transfersModel
+      .findOneAndUpdate({ id: id }, assetUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Activo actualizado', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
 module.exports = app;

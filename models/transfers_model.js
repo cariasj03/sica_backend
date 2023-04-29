@@ -1,39 +1,43 @@
 const mongoose = require("mongoose");
 
 const transferSchema = mongoose.Schema({
-  // id: {
-  //   type: String,
-  //   required: true,
-  // },
-  // name: {
-  //   type: String,
-  //   required: true,
-  // },
-  // unitOrigin: {
-  //   type: String,
-  //   required: true,
-  // },
-  unitDestination: {
+  transferId: {
     type: String,
     required: true,
   },
-  locationDestination: {
+  transferName: {
     type: String,
     required: true,
   },
-  reason: {
+  transferUnitOrigin: {
     type: String,
     required: true,
   },
-  description: {
+  transferUnitDestination: {
     type: String,
     required: true,
   },
-  // pictureOne: {
+  transferLocationDestination: {
+    type: String,
+    required: true,
+  },
+  transferLocationDestinationCode: {
+    type: String,
+    required: true,
+  },
+  transferReason: {
+    type: String,
+    required: true,
+  },
+  transferDescription: {
+    type: String,
+    required: true,
+  },
+  // transferPictureOne: {
   //   type: String,
   //   required: true,
   // },
-  // pictureTwo: {
+  // transferPictureTwo: {
   //   type: String,
   //   required: true,
   // },
