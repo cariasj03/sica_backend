@@ -79,7 +79,7 @@ app.post('/users/:id', async (req, res) => {
       })
       .exec();
 
-    console.log('Usuario actualizada', result);
+    console.log('Usuario actualizado', result);
 
     res.status(201).send(result);
   } catch (error) {
@@ -154,6 +154,34 @@ app.get('/users/sort/by-unit', async (req, res) => {
   }
 });
 
+//Fetching all users sorted by role
+app.get('/users/sort/by-role', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /users/sort/by-role');
+    const users = await usersModel
+      .find({ isApproved: true })
+      .sort({ role: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all users sorted by id
+app.get('/users/sort/by-id', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /users/sort/by-id');
+    const users = await usersModel
+      .find({ isApproved: true })
+      .sort({ id: 1 })
+      .exec();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 //Fetching users of a specific unit
 app.get('/users/filter/unit/:unit', async (req, res) => {
   try {
@@ -163,6 +191,20 @@ app.get('/users/filter/unit/:unit', async (req, res) => {
       $and: [{ isApproved: true }, { unit: unit }],
     });
     res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching users of a specific role
+app.get('/users/filter/role/:role', async (req, res) => {
+  try {
+    const role = req.params.role;
+    console.log(`Attending the GET route: /users/filter/role/${role}`);
+    const roles = await usersModel.find({
+      $and: [{ isApproved: true }, { role: role }],
+    });
+    res.send(roles);
   } catch (error) {
     res.status(500).send(error);
   }
