@@ -115,6 +115,18 @@ app.get('/assets/sort/by-unit', async (req, res) => {
   }
 });
 
+//Fetching all assets sorted by locationCode
+app.get('/assets/sort/by-locationCode', async (req, res) => {
+  try {
+    const locationCode = req.params.locationCode;
+    console.log('Attending the GET route: /assets/sort/by-locationCode');
+    const assets = await assetsModel.find().sort({ locationCode: locationCode });
+    res.send(assets);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 //Fetching all assets sorted by status
 app.get('/assets/sort/by-status', async (req, res) => {
   try {
@@ -136,6 +148,22 @@ app.get("/assets/:id", async (req, res) => {
     console.log(assetById);
 
     res.status(200).send(assetById);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching assets of a specific status
+app.get('/assets/filter/status/:status', async (req, res) => {
+  try {
+    const status = req.params.status;
+    console.log(
+      `Attending the GET route: /assets/filter/status/${status}`
+    );
+    const assets = await assetsModel.find({
+      $and: [{ isApproved: false }, { status: status }],
+    });
+    res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
