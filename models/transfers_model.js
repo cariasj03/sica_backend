@@ -33,6 +33,11 @@ const transferSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isApproved: {
+    type: Boolean,
+    required: true,
+  },
+  
   // transferPictureOne: {
   //   type: String,
   //   required: true,

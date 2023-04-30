@@ -46,6 +46,10 @@ app.use(signinRouter);
 const userRequestsRouter = require('./routes/user_requests_route');
 app.use(userRequestsRouter);
 
-//User requests route
+//asset requests route
 const assetRequestsRouter = require('./routes/assets_request_route');
 app.use(assetRequestsRouter);
+
+//transfer requests route
+const transferRequestsRouter = require('./routes/transfers_requests_route');
+app.use(transferRequestsRouter);
