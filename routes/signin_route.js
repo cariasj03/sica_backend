@@ -115,6 +115,7 @@ app.post('/forgot-password', async (req, res) => {
     };
 
     //Find the user by email and update the password
+    console.log('Searching for the user with the email: ', email);
     const user = await usersModel
       .findOneAndUpdate({ email: email }, userUpdatedInfo, {
         new: true,
