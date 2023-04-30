@@ -1,6 +1,8 @@
 //Requiring modules
 const express = require('express');
 const usersModel = require('../models/users_model.js');
+const sendEmail = require('../bl/send_email');
+
 const cors = require('cors');
 
 //Creating app
@@ -48,6 +50,8 @@ app.post('/users/signup', async (req, res) => {
   user.creationDate = currentDate;
   // Agregamos el estado de aprobación al body
   user.isApproved = false;
+  // Agregamos el estado de cambio de contraseña al body
+  user.changePassword = true;
 
   console.log('Creando usuario con datos:', req.body);
 
@@ -80,6 +84,73 @@ app.post('/users/:id', async (req, res) => {
       .exec();
 
     console.log('Usuario actualizado', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//Checking users password
+app.post('/users/check-pass/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const response = {};
+
+    console.log(`Attending the POST route: /users/check-pass/${id}`);
+
+    const userById = await usersModel.findOne({ id: id });
+    if (userById.password !== req.body.currentPassword) {
+      response.status = false;
+      res.status(200).send(response);
+      return;
+    } else {
+      response.status = true;
+      res.status(200).send(response);
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+//Updating users password
+app.post('/users/update-pass/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const response = {};
+
+    console.log(`Attending the POST route: /users/update-pass/${id}`);
+
+    const userById = await usersModel.findOne({ id: id });
+    if (userById.password !== req.body.currentPassword) {
+      response.status = false;
+      res.status(200).send(response);
+      return;
+    }
+
+    const { newPassword } = req.body;
+
+    const userUpdatedInfo = {
+      password: newPassword,
+      changePassword: false,
+    };
+
+    const result = await usersModel
+      .findOneAndUpdate({ id: id }, userUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Contraseña actualizada', result);
+
+    //Send the email with the new password
+    await sendEmail.passChangeSuccessEmail({
+      email: userById.email,
+      name: userById.firstName,
+    });
 
     res.status(201).send(result);
   } catch (error) {
