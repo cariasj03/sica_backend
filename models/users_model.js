@@ -49,6 +49,10 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  changePassword: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const User = mongoose.model('User', userSchema);
