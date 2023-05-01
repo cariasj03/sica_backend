@@ -20,7 +20,7 @@ app.get('/asset-requests', async (req, res) => {
 });
 
 //Deleting an asset
-app.post('/asset-requests/delete/:id', async (req, res) => {
+app.post('/assets-requests/delete/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -72,7 +72,7 @@ app.get('/asset-requests/sort/by-name', async (req, res) => {
   }
 });
 
-//Fetching an user by id
+//Fetching an asset by id
 app.get('/asset-requests/:id', async (req, res) => {
   const id = req.params.id;
   try {

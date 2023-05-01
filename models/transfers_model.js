@@ -1,27 +1,27 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const transferSchema = mongoose.Schema({
   transferId: {
     type: String,
     required: true,
   },
-  transferName: {
+  assetId: {
     type: String,
     required: true,
   },
-  transferUnitOrigin: {
+  originUnit: {
     type: String,
     required: true,
   },
-  transferUnitDestination: {
+  targetUnit: {
     type: String,
     required: true,
   },
-  transferLocationDestination: {
+  targetLocation: {
     type: String,
     required: true,
   },
-  transferLocationDestinationCode: {
+  targetLocationCode: {
     type: String,
     required: true,
   },
@@ -33,21 +33,32 @@ const transferSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  transferImage1: {
+    type: String,
+    required: true,
+  },
+  transferImage2: {
+    type: String,
+    required: true,
+  },
+  requestedBy: {
+    type: String,
+    required: true,
+  },
   isApproved: {
     type: Boolean,
     required: true,
   },
-  
-  // transferPictureOne: {
-  //   type: String,
-  //   required: true,
-  // },
-  // transferPictureTwo: {
-  //   type: String,
-  //   required: true,
-  // },
+  approvedBy: {
+    type: String,
+    required: false,
+  },
+  creationDate: {
+    type: Date,
+    required: true,
+  },
 });
 
-const Transfer = mongoose.model("Transfer", transferSchema);
+const Transfer = mongoose.model('Transfer', transferSchema);
 
 module.exports = Transfer;

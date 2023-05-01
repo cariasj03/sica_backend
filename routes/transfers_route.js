@@ -1,7 +1,8 @@
 //Requiring modules
-const express = require("express");
-const transfersModel = require("../models/transfers_model");
-const cors = require("cors");
+const express = require('express');
+const transfersModel = require('../models/transfers_model');
+const nextId = require('../bl/next_id');
+const cors = require('cors');
 
 //Creating app
 const app = express();
@@ -9,22 +10,25 @@ app.use(express.json());
 app.use(cors({}));
 
 //Adding a new transfer
-app.post("/transfers", async (req, res) => {
+app.post('/transfers', async (req, res) => {
   try {
-    //Adding id to the transfer
-    const transferJSON = req.body;
-    // transferJSON.id = XXX;
+    //Adding id and creationDate to the transfer
+    const transferJson = req.body;
+    const nextTransferId = await nextId.getTransferId();
+    transferJson.transferId = nextTransferId;
+    transferJson.creationDate = new Date();
+    transferJson.isApproved = false;
 
     //Creating transfer model with new transfer info
-    const transfer = new transfersModel(transferJSON);
+    const transfer = new transfersModel(transferJson);
 
-    console.log("Attending the POST route: /transfers");
+    console.log('Attending the POST route: /transfers');
 
-    console.log(transferJSON);
+    console.log(transferJson);
     console.log(transfer);
     await transfer.save();
 
-    console.log("Transferencia creada", transfer);
+    console.log('Activo creado', transfer);
 
     res.status(201).send(transfer);
   } catch (error) {
@@ -33,48 +37,30 @@ app.post("/transfers", async (req, res) => {
   }
 });
 
-app.get("/transfers", async (req, res) => {
+//Fetching all transfers
+app.get('/transfers', async (req, res) => {
   try {
-    const transfers = await transfersModel.find({});
+    console.log('Attending the GET route: /transfers');
+    const transfers = await transfersModel.find();
     res.send(transfers);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-//Fetching an unit by id
-app.get("/transfers/:id", async (req, res) => {
+//Searching transfers by id
+app.get('/transfers/search/by-id/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(`Attending the GET route: /transfers/${id}`);
-    const transfersByAssetById = await transfersModel.find({ id: id });
-    console.log(transfersByAssetById);
+    const regex = new RegExp(`(?=.*${id})`, 'i');
 
-    res.status(200).send(transfersByAssetById);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-//Updating an unit
-app.post('/transfers/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const assetUpdatedInfo = req.body;
-
-    console.log(`Attending the POST route: /transfers/${id}`);
-
-    const result = await transfersModel
-      .findOneAndUpdate({ id: id }, assetUpdatedInfo, {
-        new: true,
-      })
+    console.log(`Attending the GET route: /transfers/search/by-id/${id}`);
+    const transfers = await transfersModel
+      .find({ $and: [{ isApproved: true }, { id: { $regex: regex } }] })
+      .sort({ id: 1 })
       .exec();
-
-    console.log('Activo actualizado', result);
-
-    res.status(201).send(result);
+    res.send(transfers);
   } catch (error) {
-    console.error(error);
     res.status(500).send(error);
   }
 });

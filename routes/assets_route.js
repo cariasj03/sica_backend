@@ -41,7 +41,7 @@ app.post('/assets', async (req, res) => {
 app.get('/assets', async (req, res) => {
   try {
     console.log('Attending the GET route: /assets');
-    const assets = await assetsModel.find({ isApproved: true });
+    const assets = await assetsModel.find();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);

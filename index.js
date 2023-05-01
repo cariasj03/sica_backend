@@ -1,15 +1,15 @@
 //Requiring modules
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 //Connecting to database
 mongoose
   .connect(
-    "mongodb+srv://cariasj:QAkOkuLUarqYsDvL@sicaapp.uezet7u.mongodb.net/?retryWrites=true&w=majority",
-    { dbName: "sicaApp" }
+    'mongodb+srv://cariasj:QAkOkuLUarqYsDvL@sicaapp.uezet7u.mongodb.net/?retryWrites=true&w=majority',
+    { dbName: 'sicaApp' }
   )
-  .then(() => console.log("Database connected!"));
+  .then(() => console.log('Database connected!'));
 
 //Creating app
 const app = express();
@@ -18,28 +18,32 @@ app.use(cors({}));
 
 //App listening
 app.listen(8000, () => {
-  console.log("Listening to requests on port 8000!");
+  console.log('Listening to requests on port 8000!');
 });
 
 //Main route
-app.get("/", (req, res) => {
-  res.send("Hola mundo!");
+app.get('/', (req, res) => {
+  res.send('Hola mundo!');
 });
 
 //Units route
-const unitsRouter = require("./routes/units_route");
+const unitsRouter = require('./routes/units_route');
 app.use(unitsRouter);
 
 //Assets route
-const assetsRouter = require("./routes/assets_route");
+const assetsRouter = require('./routes/assets_route');
 app.use(assetsRouter);
 
 //Users route
-const usersRouter = require("./routes/users_route");
+const usersRouter = require('./routes/users_route');
 app.use(usersRouter);
 
+//Transfers route
+const transfersRouter = require('./routes/transfers_route');
+app.use(transfersRouter);
+
 //Signin route
-const signinRouter = require("./routes/signin_route");
+const signinRouter = require('./routes/signin_route');
 app.use(signinRouter);
 
 //User requests route

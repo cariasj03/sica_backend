@@ -1,10 +1,10 @@
 //Functions
 //Function to pad the zeros to the id
 const padZeros = (num) => {
-  if (typeof num !== "string") {
+  if (typeof num !== 'string') {
     num = num.toString();
   }
-  const paddedNum = num.padStart(6, "0");
+  const paddedNum = num.padStart(6, '0');
   return paddedNum;
 };
 
@@ -16,9 +16,9 @@ const getNextId = (num) => {
 
 //Async functions
 //Function to get the unit id
-exports.getUnitId = async () => {
+const getUnitId = async () => {
   try {
-    const units = await fetch("http://127.0.0.1:8000/units/sort/by-id");
+    const units = await fetch('http://127.0.0.1:8000/units/sort/by-id');
     const unitsList = await units.json();
     const unitIds = unitsList.map((unit) => {
       return Number(unit.id);
@@ -33,9 +33,9 @@ exports.getUnitId = async () => {
 };
 
 //Function to get the asset id
-exports.getAssetId = async () => {
+const getAssetId = async () => {
   try {
-    const assets = await fetch("http://127.0.0.1:8000/assets/sort/by-id");
+    const assets = await fetch('http://127.0.0.1:8000/assets');
     const assetsList = await assets.json();
     const assetsIds = assetsList.map((asset) => {
       return Number(asset.id);
@@ -48,3 +48,22 @@ exports.getAssetId = async () => {
     throw error;
   }
 };
+
+//Function to get the transfer id
+const getTransferId = async () => {
+  try {
+    const transfers = await fetch('http://127.0.0.1:8000/transfers');
+    const transfersList = await transfers.json();
+    const transferIds = transfersList.map((transfer) => {
+      return Number(transfer.transferId);
+    });
+    const lastId = Math.max(...transferIds);
+    const nextId = await getNextId(lastId);
+    return nextId;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+module.exports = { getUnitId, getAssetId, getTransferId };
