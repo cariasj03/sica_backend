@@ -1,8 +1,8 @@
 //Requiring modules
-const express = require("express");
-const assetsModel = require("../models/assets_model");
-const nextId = require("../bl/next_id");
-const cors = require("cors");
+const express = require('express');
+const assetsModel = require('../models/assets_model');
+const nextId = require('../bl/next_id');
+const cors = require('cors');
 
 //Creating app
 const app = express();
@@ -10,24 +10,25 @@ app.use(express.json());
 app.use(cors({}));
 
 //Adding a new asset
-app.post("/assets", async (req, res) => {
+app.post('/assets', async (req, res) => {
   try {
     //Adding id and creationDate to the asset
     const assetJson = req.body;
     const nextAssetId = await nextId.getAssetId();
     assetJson.id = nextAssetId;
+    assetJson.creationDate = new Date();
     assetJson.isApproved = false;
 
     //Creating asset model with new asset info
     const asset = new assetsModel(assetJson);
 
-    console.log("Attending the POST route: /assets");
+    console.log('Attending the POST route: /assets');
 
     console.log(assetJson);
     console.log(asset);
     await asset.save();
 
-    console.log("Activo creado", asset);
+    console.log('Activo creado', asset);
 
     res.status(201).send(asset);
   } catch (error) {
@@ -37,10 +38,10 @@ app.post("/assets", async (req, res) => {
 });
 
 //Fetching all assets
-app.get("/assets", async (req, res) => {
+app.get('/assets', async (req, res) => {
   try {
     console.log('Attending the GET route: /assets');
-    const assets = await assetsModel.find({});
+    const assets = await assetsModel.find({ isApproved: true });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -55,7 +56,7 @@ app.get('/assets/search/by-id/:id', async (req, res) => {
 
     console.log(`Attending the GET route: /assets/search/by-id/${id}`);
     const assets = await assetsModel
-      .find({ $and: [{ id: { $regex: regex } }] })
+      .find({ $and: [{ isApproved: true }, { id: { $regex: regex } }] })
       .sort({ id: 1 })
       .exec();
     res.send(assets);
@@ -72,8 +73,8 @@ app.get('/assets/search/by-name/:name', async (req, res) => {
 
     console.log(`Attending the GET route: /assets/search/by-name/${name}`);
     const asse = await assetsModel
-      .find({ name: { $regex: regex } })
-      .sort({ name:1 })
+      .find({ $and: [{ isApproved: true }, { name: { $regex: regex } }] })
+      .sort({ name: 1 })
       .exec();
     res.send(asse);
   } catch (error) {
@@ -82,10 +83,13 @@ app.get('/assets/search/by-name/:name', async (req, res) => {
 });
 
 //Fetching all assets by id
-app.get("/assets/sort/by-id", async (req, res) => {
+app.get('/assets/sort/by-id', async (req, res) => {
   try {
-    console.log("Attending the GET route: /assets/sort/by-id");
-    const assets = await assetsModel.find().sort({ id: 1 }).exec();
+    console.log('Attending the GET route: /assets/sort/by-id');
+    const assets = await assetsModel
+      .find({ isApproved: true })
+      .sort({ id: 1 })
+      .exec();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -96,7 +100,10 @@ app.get("/assets/sort/by-id", async (req, res) => {
 app.get('/assets/sort/by-name', async (req, res) => {
   try {
     console.log('Attending the GET route: /assets/sort/by-name');
-    const assets = await assetsModel.find().sort({ name: 1 }).exec();
+    const assets = await assetsModel
+      .find({ isApproved: true })
+      .sort({ name: 1 })
+      .exec();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -108,7 +115,9 @@ app.get('/assets/sort/by-unit', async (req, res) => {
   try {
     const unit = req.params.unit;
     console.log('Attending the GET route: /assets/sort/by-unit');
-    const assets = await assetsModel.find().sort({ unit: unit });
+    const assets = await assetsModel
+      .find({ isApproved: true })
+      .sort({ unit: unit });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -120,7 +129,9 @@ app.get('/assets/sort/by-locationCode', async (req, res) => {
   try {
     const locationCode = req.params.locationCode;
     console.log('Attending the GET route: /assets/sort/by-locationCode');
-    const assets = await assetsModel.find().sort({ locationCode: locationCode });
+    const assets = await assetsModel
+      .find({ isApproved: true })
+      .sort({ locationCode: locationCode });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -132,15 +143,17 @@ app.get('/assets/sort/by-status', async (req, res) => {
   try {
     const status = req.params.status;
     console.log('Attending the GET route: /assets/sort/by-status');
-    const assets = await assetsModel.find().sort({ status: status });
+    const assets = await assetsModel
+      .find({ isApproved: true })
+      .sort({ status: status });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-//Fetching an unit by id
-app.get("/assets/:id", async (req, res) => {
+//Fetching an asset by id
+app.get('/assets/:id', async (req, res) => {
   try {
     const id = req.params.id;
     console.log(`Attending the GET route: /assets/${id}`);
@@ -157,11 +170,9 @@ app.get("/assets/:id", async (req, res) => {
 app.get('/assets/filter/status/:status', async (req, res) => {
   try {
     const status = req.params.status;
-    console.log(
-      `Attending the GET route: /assets/filter/status/${status}`
-    );
+    console.log(`Attending the GET route: /assets/filter/status/${status}`);
     const assets = await assetsModel.find({
-      $and: [{ isApproved: false }, { status: status }],
+      $and: [{ isApproved: true }, { status: status }],
     });
     res.send(assets);
   } catch (error) {
@@ -175,7 +186,7 @@ app.get('/assets/filter/unit/:unit', async (req, res) => {
     const unit = req.params.unit;
     console.log(`Attending the GET route: /assets/filter/name/${unit}`);
     const assets = await assetsModel.find({
-      $and: [{ unit: unit }],
+      $and: [{ isApproved: true }, { unit: unit }],
     });
     res.send(assets);
   } catch (error) {
@@ -183,7 +194,7 @@ app.get('/assets/filter/unit/:unit', async (req, res) => {
   }
 });
 
-//Updating an unit
+//Updating an asset
 app.post('/assets/:id', async (req, res) => {
   try {
     const id = req.params.id;

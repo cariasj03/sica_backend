@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const assetSchema = mongoose.Schema({
   id: {
@@ -32,9 +32,17 @@ const assetSchema = mongoose.Schema({
   isApproved: {
     type: Boolean,
     required: true,
-  }
+  },
+  creationDate: {
+    type: Date,
+    required: true,
+  },
+  approvedBy: {
+    type: String,
+    required: false,
+  },
 });
 
-const Asset = mongoose.model("Asset", assetSchema);
+const Asset = mongoose.model('Asset', assetSchema);
 
 module.exports = Asset;
