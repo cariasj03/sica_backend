@@ -9,10 +9,10 @@ app.use(express.json());
 app.use(cors({}));
 
 //Fetching all assets
-app.get('/asset-requests', async (req, res) => {
+app.get('/asset-report', async (req, res) => {
   try {
-    console.log('Attending the GET route: /asset-requests');
-    const assets = await assetsModel.find({ isApproved: false });
+    console.log('Attending the GET route: /asset-report');
+    const assets = await assetsModel.find();
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -20,11 +20,11 @@ app.get('/asset-requests', async (req, res) => {
 });
 
 //Deleting an asset
-app.post('/asset-requests/delete/:id', async (req, res) => {
+app.post('/asset-report/delete/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
-    console.log(`Attending the POST route: /asset-requests/delete/${id}`);
+    console.log(`Attending the POST route: /asset-report/delete/${id}`);
 
     const result = await assetsModel
       .findOneAndDelete(
@@ -45,11 +45,11 @@ app.post('/asset-requests/delete/:id', async (req, res) => {
 });
 
 //Fetching all assets by id
-app.get('/asset-requests/sort/by-id', async (req, res) => {
+app.get('/asset-report/sort/by-id', async (req, res) => {
   try {
-    console.log('Attending the GET route: /asset-requests/sort/by-id');
+    console.log('Attending the GET route: /asset-report/sort/by-id');
     const assets = await assetsModel
-      .find({ isApproved: false })
+      .find()
       .sort({ id: 1 })
       .exec();
     res.send(assets);
@@ -59,11 +59,11 @@ app.get('/asset-requests/sort/by-id', async (req, res) => {
 });
 
 //Fetching all assets sorted by name
-app.get('/asset-requests/sort/by-name', async (req, res) => {
+app.get('/asset-report/sort/by-name', async (req, res) => {
   try {
-    console.log('Attending the GET route: /asset-requests/sort/by-name');
+    console.log('Attending the GET route: /asset-report/sort/by-name');
     const assets = await assetsModel
-      .find({ isApproved: false })
+      .find()
       .sort({ name: 1 })
       .exec();
     res.send(assets);
@@ -73,10 +73,10 @@ app.get('/asset-requests/sort/by-name', async (req, res) => {
 });
 
 //Fetching an user by id
-app.get('/asset-requests/:id', async (req, res) => {
+app.get('/asset-report/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    console.log(`Attending the GET route: /asset-requests/${id}`);
+    console.log(`Attending the GET route: /asset-report/${id}`);
     const assetsById = await assetsModel.find({ id: id });
 
     res.status(200).send(assetsById);
@@ -86,11 +86,11 @@ app.get('/asset-requests/:id', async (req, res) => {
 });
 
 //Fetching all assets sorted by unit
-app.get('/asset-requests/sort/by-unit', async (req, res) => {
+app.get('/asset-report/sort/by-unit', async (req, res) => {
   try {
-    console.log('Attending the GET route: /asset-requests/sort/by-unit');
+    console.log('Attending the GET route: /asset-report/sort/by-unit');
     const assets = await assetsModel
-      .find({ isApproved: false })
+      .find()
       .sort({ unit: 1 })
       .exec();
     res.send(assets);
@@ -100,12 +100,12 @@ app.get('/asset-requests/sort/by-unit', async (req, res) => {
 });
 
 //Fetching assets of a specific unit
-app.get('/asset-requests/filter/unit/:unit', async (req, res) => {
+app.get('/asset-report/filter/unit/:unit', async (req, res) => {
   try {
     const unit = req.params.unit;
-    console.log(`Attending the GET route: /asset-requests/filter/unit/${unit}`);
+    console.log(`Attending the GET route: /asset-report/filter/unit/${unit}`);
     const assets = await assetsModel.find({
-      $and: [{ isApproved: false }, { unit: unit }],
+      $and: [ { unit: unit }],
     });
     res.send(assets);
   } catch (error) {
@@ -114,11 +114,11 @@ app.get('/asset-requests/filter/unit/:unit', async (req, res) => {
 });
 
 //Fetching all assets sorted by status
-app.get('/asset-requests/sort/by-status', async (req, res) => {
+app.get('/asset-report/sort/by-status', async (req, res) => {
   try {
-    console.log('Attending the GET route: /asset-requests/sort/by-status');
+    console.log('Attending the GET route: /asset-report/sort/by-status');
     const assets = await assetsModel
-      .find({ isApproved: false })
+      .find()
       .sort({ status: 1 })
       .exec();
     res.send(assets);
@@ -128,14 +128,14 @@ app.get('/asset-requests/sort/by-status', async (req, res) => {
 });
 
 //Fetching assets of a specific status
-app.get('/asset-requests/filter/status/:status', async (req, res) => {
+app.get('/asset-report/filter/status/:status', async (req, res) => {
   try {
     const status = req.params.status;
     console.log(
-      `Attending the GET route: /asset-requests/filter/status/${status}`
+      `Attending the GET route: /asset-report/filter/status/${status}`
     );
     const assets = await assetsModel.find({
-      $and: [{ isApproved: false }, { status: status }],
+      $and: [ { status: status }],
     });
     res.send(assets);
   } catch (error) {
@@ -144,14 +144,14 @@ app.get('/asset-requests/filter/status/:status', async (req, res) => {
 });
 
 //Searching assets by id
-app.get('/asset-requests/search/by-id/:id', async (req, res) => {
+app.get('/asset-report/search/by-id/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const regex = new RegExp(`(?=.*${id})`, 'i');
 
-    console.log(`Attending the GET route: /asset-requests/search/by-id/${id}`);
+    console.log(`Attending the GET route: /asset-report/search/by-id/${id}`);
     const assets = await assetsModel
-      .find({ $and: [{ isApproved: false }, { id: { $regex: regex } }] })
+      .find({ $and: [ { id: { $regex: regex } }] })
       .sort({ id: 1 })
       .exec();
     res.send(assets);
@@ -161,18 +161,17 @@ app.get('/asset-requests/search/by-id/:id', async (req, res) => {
 });
 
 //Searching assets by name
-app.get('/asset-requests/search/by-name/:name', async (req, res) => {
+app.get('/asset-report/search/by-name/:name', async (req, res) => {
   try {
     const name = req.params.name;
     const regex = new RegExp(`(?=.*${name})`, 'i');
 
     console.log(
-      `Attending the GET route: /asset-requests/search/by-name/${name}`
+      `Attending the GET route: /asset-report/search/by-name/${name}`
     );
     const assets = await assetsModel
       .find({
         $and: [
-          { isApproved: false },
           {
             $or: [{ name: { $regex: regex } }],
           },

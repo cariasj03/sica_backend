@@ -53,3 +53,15 @@ app.use(assetRequestsRouter);
 //transfer requests route
 const transferRequestsRouter = require('./routes/transfers_requests_route');
 app.use(transferRequestsRouter);
+
+//asset requests route
+const assetWarehouseRouter = require('./routes/assets_reports_warehouse_route');
+app.use(assetWarehouseRouter);
+
+//asset requests route
+const assetDonationsRouter = require('./routes/assets_reports_donations_route');
+app.use(assetDonationsRouter);
+
+//asset requests route
+const assetReportRouter = require('./routes/assets_reports_route');
+app.use(assetReportRouter);
