@@ -53,6 +53,10 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  approvedBy: {
+    type: String,
+    required: false,
+  },
 });
 
 const User = mongoose.model('User', userSchema);

@@ -180,7 +180,7 @@ app.get('/assets/filter/status/:status', async (req, res) => {
   }
 });
 
-//Fetching units of a specific unit
+//Fetching assets of a specific unit
 app.get('/assets/filter/unit/:unit', async (req, res) => {
   try {
     const unit = req.params.unit;
