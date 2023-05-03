@@ -37,6 +37,29 @@ app.post('/transfers', async (req, res) => {
   }
 });
 
+//Updating a transfer
+app.post('/transfers/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const transferUpdatedInfo = req.body;
+
+    console.log(`Attending the POST route: /transfers/${id}`);
+
+    const result = await transfersModel
+      .findOneAndUpdate({ transferId: id }, transferUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Traslado actualizado: ', result);
+
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
 //Fetching all transfers
 app.get('/transfers', async (req, res) => {
   try {
@@ -48,18 +71,14 @@ app.get('/transfers', async (req, res) => {
   }
 });
 
-//Searching transfers by id
-app.get('/transfers/search/by-id/:id', async (req, res) => {
+//Fetching an transfer by id
+app.get('/transfers/:id', async (req, res) => {
+  const id = req.params.id;
   try {
-    const id = req.params.id;
-    const regex = new RegExp(`(?=.*${id})`, 'i');
+    console.log(`Attending the GET route: /transfers/${id}`);
+    const transferById = await transfersModel.find({ transferId: id });
 
-    console.log(`Attending the GET route: /transfers/search/by-id/${id}`);
-    const transfers = await transfersModel
-      .find({ $and: [{ isApproved: true }, { id: { $regex: regex } }] })
-      .sort({ id: 1 })
-      .exec();
-    res.send(transfers);
+    res.status(200).send(transferById);
   } catch (error) {
     res.status(500).send(error);
   }

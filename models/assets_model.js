@@ -41,6 +41,10 @@ const assetSchema = mongoose.Schema({
     type: String,
     required: false,
   },
+  requestedBy: {
+    type: String,
+    required: false,
+  },
 });
 
 const Asset = mongoose.model('Asset', assetSchema);

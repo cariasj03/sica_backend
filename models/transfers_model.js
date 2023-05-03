@@ -9,6 +9,10 @@ const transferSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  assetName: {
+    type: String,
+    required: true,
+  },
   originUnit: {
     type: String,
     required: true,
