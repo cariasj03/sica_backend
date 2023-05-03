@@ -166,15 +166,23 @@ app.get('/assets/sort/by-name', async (req, res) => {
     console.log('Attending the GET route: /assets/sort/by-name');
 
     const queryId = req.query.id;
-    const user = await usersModel.find({ id: queryId });
 
     let assets = [];
 
-    if (user[0].role === 'Encargado de Inventario por Unidad') {
-      assets = await assetsModel
-        .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
-        .sort({ name: 1 })
-        .exec();
+    if (queryId !== undefined) {
+      const user = await usersModel.find({ id: queryId });
+
+      if (user[0].role === 'Encargado de Inventario por Unidad') {
+        assets = await assetsModel
+          .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
+          .sort({ name: 1 })
+          .exec();
+      } else {
+        assets = await assetsModel
+          .find({ isApproved: true })
+          .sort({ name: 1 })
+          .exec();
+      }
     } else {
       assets = await assetsModel
         .find({ isApproved: true })
