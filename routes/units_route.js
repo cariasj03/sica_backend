@@ -1,6 +1,7 @@
 //Requiring modules
 const express = require('express');
 const unitsModel = require('../models/units_model');
+const usersModel = require('../models/users_model');
 const cors = require('cors');
 const nextId = require('../bl/next_id');
 
@@ -74,7 +75,25 @@ app.get('/units/sort/by-id', async (req, res) => {
 app.get('/units/sort/by-name', async (req, res) => {
   try {
     console.log('Attending the GET route: /units/sort/by-name');
-    const units = await unitsModel.find().sort({ name: 1 }).exec();
+
+    const queryId = req.query.id;
+
+    let units = [];
+
+    if (queryId !== undefined) {
+      const user = await usersModel.find({ id: queryId });
+      if (user[0].role === 'Encargado de Inventario por Unidad') {
+        units = await unitsModel
+          .find({ name: user[0].unit })
+          .sort({ name: 1 })
+          .exec();
+      } else {
+        units = await unitsModel.find().sort({ name: 1 }).exec();
+      }
+    } else {
+      units = await unitsModel.find().sort({ name: 1 }).exec();
+    }
+
     res.send(units);
   } catch (error) {
     res.status(500).send(error);
@@ -108,22 +127,6 @@ app.get('/units/sort/by-canton', async (req, res) => {
   try {
     console.log('Attending the GET route: /units/sort/by-canton');
     const units = await unitsModel.find().sort({ canton: 1 }).exec();
-    res.send(units);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-
-
-//Fetching units of a specific unit
-app.get('/units/filter/name/:name', async (req, res) => {
-  try {
-    const name = req.params.name;
-    console.log(`Attending the GET route: /units/filter/name/${name}`);
-    const units = await unitsModel.find({
-      $and: [{ name: name }],
-    });
     res.send(units);
   } catch (error) {
     res.status(500).send(error);

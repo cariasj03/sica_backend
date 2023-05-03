@@ -1,6 +1,7 @@
 //Requiring modules
 const express = require('express');
 const assetsModel = require('../models/assets_model');
+const usersModel = require('../models/users_model');
 const nextId = require('../bl/next_id');
 const cors = require('cors');
 
@@ -17,7 +18,19 @@ app.post('/assets', async (req, res) => {
     const nextAssetId = await nextId.getAssetId();
     assetJson.id = nextAssetId;
     assetJson.creationDate = new Date();
-    assetJson.isApproved = false;
+
+    const queryId = req.query.id;
+
+    if (queryId !== undefined) {
+      const user = await usersModel.find({ id: queryId });
+      if (user[0].role === 'Encargado de Inventario por Unidad') {
+        assetJson.isApproved = false;
+      } else {
+        assetJson.isApproved = true;
+      }
+    } else {
+      assetJson.isApproved = false;
+    }
 
     //Creating asset model with new asset info
     const asset = new assetsModel(assetJson);
@@ -51,14 +64,33 @@ app.get('/assets', async (req, res) => {
 //Searching assets by id
 app.get('/assets/search/by-id/:id', async (req, res) => {
   try {
-    const id = req.params.id;
-    const regex = new RegExp(`(?=.*${id})`, 'i');
+    const assetId = req.params.id;
+    console.log(`Attending the GET route: /assets/search/by-id/${assetId}`);
 
-    console.log(`Attending the GET route: /assets/search/by-id/${id}`);
-    const assets = await assetsModel
-      .find({ $and: [{ isApproved: true }, { id: { $regex: regex } }] })
-      .sort({ id: 1 })
-      .exec();
+    const regex = new RegExp(`(?=.*${assetId})`, 'i');
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({
+          $and: [
+            { unit: user[0].unit },
+            { isApproved: true },
+            { id: { $regex: regex } },
+          ],
+        })
+        .sort({ id: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true }, { id: { $regex: regex } })
+        .sort({ id: 1 })
+        .exec();
+    }
+
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -69,14 +101,32 @@ app.get('/assets/search/by-id/:id', async (req, res) => {
 app.get('/assets/search/by-name/:name', async (req, res) => {
   try {
     const name = req.params.name;
-    const regex = new RegExp(`(?=.*${name})`, 'i');
-
     console.log(`Attending the GET route: /assets/search/by-name/${name}`);
-    const asse = await assetsModel
-      .find({ $and: [{ isApproved: true }, { name: { $regex: regex } }] })
-      .sort({ name: 1 })
-      .exec();
-    res.send(asse);
+    const regex = new RegExp(`(?=.*${name})`, 'i');
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({
+          $and: [
+            { unit: user[0].unit },
+            { isApproved: true },
+            { name: { $regex: regex } },
+          ],
+        })
+        .sort({ id: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true }, { name: { $regex: regex } })
+        .sort({ id: 1 })
+        .exec();
+    }
+
+    res.send(assets);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -86,10 +136,24 @@ app.get('/assets/search/by-name/:name', async (req, res) => {
 app.get('/assets/sort/by-id', async (req, res) => {
   try {
     console.log('Attending the GET route: /assets/sort/by-id');
-    const assets = await assetsModel
-      .find({ isApproved: true })
-      .sort({ id: 1 })
-      .exec();
+
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
+        .sort({ id: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true })
+        .sort({ id: 1 })
+        .exec();
+    }
+
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -100,10 +164,24 @@ app.get('/assets/sort/by-id', async (req, res) => {
 app.get('/assets/sort/by-name', async (req, res) => {
   try {
     console.log('Attending the GET route: /assets/sort/by-name');
-    const assets = await assetsModel
-      .find({ isApproved: true })
-      .sort({ name: 1 })
-      .exec();
+
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
+        .sort({ name: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true })
+        .sort({ name: 1 })
+        .exec();
+    }
+
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -113,25 +191,24 @@ app.get('/assets/sort/by-name', async (req, res) => {
 //Fetching all assets sorted by unit
 app.get('/assets/sort/by-unit', async (req, res) => {
   try {
-    const unit = req.params.unit;
     console.log('Attending the GET route: /assets/sort/by-unit');
-    const assets = await assetsModel
-      .find({ isApproved: true })
-      .sort({ unit: unit });
-    res.send(assets);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
 
-//Fetching all assets sorted by locationCode
-app.get('/assets/sort/by-locationCode', async (req, res) => {
-  try {
-    const locationCode = req.params.locationCode;
-    console.log('Attending the GET route: /assets/sort/by-locationCode');
-    const assets = await assetsModel
-      .find({ isApproved: true })
-      .sort({ locationCode: locationCode });
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
+        .sort({ unit: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true })
+        .sort({ unit: 1 })
+        .exec();
+    }
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -141,11 +218,24 @@ app.get('/assets/sort/by-locationCode', async (req, res) => {
 //Fetching all assets sorted by status
 app.get('/assets/sort/by-status', async (req, res) => {
   try {
-    const status = req.params.status;
     console.log('Attending the GET route: /assets/sort/by-status');
-    const assets = await assetsModel
-      .find({ isApproved: true })
-      .sort({ status: status });
+
+    const queryId = req.query.id;
+    const user = await usersModel.find({ id: queryId });
+
+    let assets = [];
+
+    if (user[0].role === 'Encargado de Inventario por Unidad') {
+      assets = await assetsModel
+        .find({ $and: [{ unit: user[0].unit }, { isApproved: true }] })
+        .sort({ status: 1 })
+        .exec();
+    } else {
+      assets = await assetsModel
+        .find({ isApproved: true })
+        .sort({ status: 1 })
+        .exec();
+    }
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
