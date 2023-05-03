@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const transfersModel = require('../models/transfers_model');
+const assetsModel = require('../models/assets_model');
 const usersModel = require('../models/users_model');
 const nextId = require('../bl/next_id');
 const sendEmail = require('../bl/send_email');
@@ -14,23 +15,39 @@ app.use(cors({}));
 //Adding a new transfer
 app.post('/transfers', async (req, res) => {
   try {
-    //Adding id and creationDate to the transfer
-    const transferJson = req.body;
-    const nextTransferId = await nextId.getTransferId();
-    transferJson.transferId = nextTransferId;
-    transferJson.creationDate = new Date();
-    transferJson.isApproved = false;
-
-    //Creating transfer model with new transfer info
-    const transfer = new transfersModel(transferJson);
-
     console.log('Attending the POST route: /transfers');
 
-    console.log(transferJson);
-    console.log(transfer);
+    //Adding id and creationDate to the transfer
+    const transferInfo = req.body.transferInfo;
+    const nextTransferId = await nextId.getTransferId();
+    transferInfo.transferId = nextTransferId;
+    transferInfo.creationDate = new Date();
+
+    const queryId = req.query.id;
+
+    if (queryId !== undefined) {
+      const user = await usersModel.find({ id: queryId });
+      if (user[0].role === 'Encargado de Inventario por Unidad') {
+        transferInfo.isApproved = false;
+      } else {
+        const assetUpdatedInfo = req.body.assetUpdatedInfo;
+        const asset = await assetsModel
+          .findOneAndUpdate({ id: transferInfo.assetId }, assetUpdatedInfo, {
+            new: true,
+          })
+          .exec();
+        console.log('Activo actualizado', asset);
+
+        transferInfo.isApproved = true;
+        transferInfo.approvedBy = queryId;
+      }
+    } else {
+    }
+
+    const transfer = new transfersModel(transferInfo);
     await transfer.save();
 
-    console.log('Activo creado', transfer);
+    console.log('Traslado creado', transfer);
 
     res.status(201).send(transfer);
   } catch (error) {
@@ -43,29 +60,40 @@ app.post('/transfers', async (req, res) => {
 app.post('/transfers/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const transferUpdatedInfo = req.body;
+    const assetUpdatedInfo = req.body.assetUpdatedInfo;
+    const transferUpdatedInfo = req.body.transferUpdatedInfo;
 
     console.log(`Attending the POST route: /transfers/${id}`);
 
-    const result = await transfersModel
+    const transfer = await transfersModel
       .findOneAndUpdate({ transferId: id }, transferUpdatedInfo, {
         new: true,
       })
       .exec();
 
-    const requestingUser = await usersModel.findOne({ id: result.requestedBy });
+    console.log('Traslado actualizado', transfer);
+
+    const asset = await assetsModel
+      .findOneAndUpdate({ id: transfer.assetId }, assetUpdatedInfo, {
+        new: true,
+      })
+      .exec();
+
+    console.log('Activo actualizado', asset);
+
+    const requestingUser = await usersModel.findOne({
+      id: transfer.requestedBy,
+    });
 
     //Send the email with the status of the transfer
     await sendEmail.sendTransferResultEmail({
       email: requestingUser.email,
       name: `${requestingUser.firstName} ${requestingUser.lastName}`,
-      transferStatus: result.isApproved === true ? 'Aprobada.' : 'Rechazada.',
-      transferId: result.transferId,
+      transferStatus: transfer.isApproved === true ? 'Aprobada.' : 'Rechazada.',
+      transferId: transfer.transferId,
     });
 
-    console.log('Traslado actualizado: ', result);
-
-    res.status(201).send(result);
+    res.status(201).send(transfer);
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
@@ -198,7 +226,9 @@ app.get('/transfers/sort/by-creation-date', async (req, res) => {
 app.get('/transfers/filter/originUnit/:originUnit', async (req, res) => {
   try {
     const originUnit = req.params.originUnit;
-    console.log(`Attending the GET route: /transfers/filter/originUnit/${originUnit}`);
+    console.log(
+      `Attending the GET route: /transfers/filter/originUnit/${originUnit}`
+    );
     const orUn = await transfersModel.find({
       $and: [{ isApproved: true }, { originUnit: originUnit }],
     });
@@ -212,7 +242,9 @@ app.get('/transfers/filter/originUnit/:originUnit', async (req, res) => {
 app.get('/transfers/filter/targetUnit/:targetUnit', async (req, res) => {
   try {
     const targetUnit = req.params.targetUnit;
-    console.log(`Attending the GET route: /transfers/filter/targetUnit/${targetUnit}`);
+    console.log(
+      `Attending the GET route: /transfers/filter/targetUnit/${targetUnit}`
+    );
     const tarUn = await transfersModel.find({
       $and: [{ isApproved: true }, { targetUnit: targetUnit }],
     });
