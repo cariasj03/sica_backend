@@ -65,4 +65,18 @@ app.get('/transfers/search/by-id/:id', async (req, res) => {
   }
 });
 
+//Fetching all transfers by id
+app.get('/transfers/sort/by-id', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-id');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ id: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 module.exports = app;
