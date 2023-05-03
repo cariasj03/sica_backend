@@ -90,7 +90,7 @@ app.get('/transfers/sort/by-id', async (req, res) => {
     console.log('Attending the GET route: /transfers/sort/by-id');
     const transfers = await transfersModel
       .find({ isApproved: true })
-      .sort({ id: 1 })
+      .sort({ transferId: 1 })
       .exec();
     res.send(transfers);
   } catch (error) {
