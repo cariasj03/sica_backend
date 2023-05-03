@@ -12,7 +12,7 @@ app.use(cors({}));
 app.get('/asset-report', async (req, res) => {
   try {
     console.log('Attending the GET route: /asset-report');
-    const assets = await assetsModel.find();
+    const assets = await assetsModel.find({ isApproved: true });
     res.send(assets);
   } catch (error) {
     res.status(500).send(error);
@@ -49,7 +49,7 @@ app.get('/asset-report/sort/by-id', async (req, res) => {
   try {
     console.log('Attending the GET route: /asset-report/sort/by-id');
     const assets = await assetsModel
-      .find()
+      .find({ isApproved: true })
       .sort({ id: 1 })
       .exec();
     res.send(assets);
@@ -63,7 +63,7 @@ app.get('/asset-report/sort/by-name', async (req, res) => {
   try {
     console.log('Attending the GET route: /asset-report/sort/by-name');
     const assets = await assetsModel
-      .find()
+      .find({ isApproved: true })
       .sort({ name: 1 })
       .exec();
     res.send(assets);
@@ -90,7 +90,7 @@ app.get('/asset-report/sort/by-unit', async (req, res) => {
   try {
     console.log('Attending the GET route: /asset-report/sort/by-unit');
     const assets = await assetsModel
-      .find()
+      .find({ isApproved: true })
       .sort({ unit: 1 })
       .exec();
     res.send(assets);
@@ -118,7 +118,7 @@ app.get('/asset-report/sort/by-status', async (req, res) => {
   try {
     console.log('Attending the GET route: /asset-report/sort/by-status');
     const assets = await assetsModel
-      .find()
+      .find({ isApproved: true })
       .sort({ status: 1 })
       .exec();
     res.send(assets);
