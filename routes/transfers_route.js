@@ -96,13 +96,83 @@ app.get('/transfers/:id', async (req, res) => {
   }
 });
 
-//Fetching all transfers by id
+//Fetching all transfers by AssetID
 app.get('/transfers/sort/by-id', async (req, res) => {
   try {
     console.log('Attending the GET route: /transfers/sort/by-id');
     const transfers = await transfersModel
       .find({ isApproved: true })
-      .sort({ transferId: 1 })
+      .sort({ assetId: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by targetUnit
+app.get('/transfers/sort/by-target-unit', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-target-unit');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ targetUnit: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by originUnit
+app.get('/transfers/sort/by-origin-unit', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-origin-unit');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ originUnit: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by transferReason
+app.get('/transfers/sort/by-transfer-reason', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-transfer-reason');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ transferReason: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by transferReason
+app.get('/transfers/sort/by-name', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-name');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ assetName: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by assetId
+app.get('/transfers/sort/by-assetId', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-assetId');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ assetId: 1 })
       .exec();
     res.send(transfers);
   } catch (error) {
@@ -119,6 +189,34 @@ app.get('/transfers/sort/by-creation-date', async (req, res) => {
       .sort({ creationDate: 1 })
       .exec();
     res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching transfers of a specific Origin unit
+app.get('/transfers/filter/originUnit/:originUnit', async (req, res) => {
+  try {
+    const originUnit = req.params.originUnit;
+    console.log(`Attending the GET route: /transfers/filter/originUnit/${originUnit}`);
+    const orUn = await transfersModel.find({
+      $and: [{ isApproved: true }, { originUnit: originUnit }],
+    });
+    res.send(orUn);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching transfers of a specific Target unit
+app.get('/transfers/filter/targetUnit/:targetUnit', async (req, res) => {
+  try {
+    const targetUnit = req.params.targetUnit;
+    console.log(`Attending the GET route: /transfers/filter/targetUnit/${targetUnit}`);
+    const tarUn = await transfersModel.find({
+      $and: [{ isApproved: true }, { targetUnit: targetUnit }],
+    });
+    res.send(tarUn);
   } catch (error) {
     res.status(500).send(error);
   }
