@@ -3,6 +3,8 @@ const express = require('express');
 const transfersModel = require('../models/transfers_model');
 const nextId = require('../bl/next_id');
 const cors = require('cors');
+const sendEmail = require('../bl/send_email');
+const usersModel = require('../models/users_model');
 
 //Creating app
 const app = express();
@@ -50,6 +52,16 @@ app.post('/transfers/:id', async (req, res) => {
         new: true,
       })
       .exec();
+    
+    const user = await usersModel.findOne({ id: result.requestedBy})
+    
+    //Send the email with the status of the transfer
+    await sendEmail.sendTransferResultEmail({
+      email: user.email,
+      name: user.firstName + ' ' + user.lastName,
+      transferStatus: transferUpdatedInfo.isApproved,
+      transferId: transferUpdatedInfo.transferId,
+    });
 
     console.log('Traslado actualizado: ', result);
 
