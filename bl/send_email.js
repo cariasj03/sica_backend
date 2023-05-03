@@ -888,7 +888,7 @@ const sendTransferResultEmail = async (emailData) => {
                           <div class="f-fallback">
                             <h1>Resultado de solicitud de traslado</h1>
                             <h2>Hola ${name},</h2>
-                            <p>Le informamos que el estado de su solicitud de traslado ${transferId} ha sido actualizado:</p>
+                            <p>Le informamos que el estado de su solicitud del traslado número ${transferId} ha sido actualizado:</p>
                           
                             <p class="user-data">• Estado de la solicitud: ${transferStatus}</p>
                           
@@ -936,6 +936,9 @@ const sendTransferResultEmail = async (emailData) => {
   }
 };
 
-
 //Exports
-module.exports = { sendPasswordEmail, passChangeSuccessEmail, sendTransferResultEmail };
+module.exports = {
+  sendPasswordEmail,
+  passChangeSuccessEmail,
+  sendTransferResultEmail,
+};

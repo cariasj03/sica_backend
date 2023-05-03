@@ -1,7 +1,6 @@
 //Requiring modules
 const express = require('express');
 const transfersModel = require('../models/transfers_model');
-const assetsModel = require('../models/assets_model');
 const cors = require('cors');
 
 //Creating app

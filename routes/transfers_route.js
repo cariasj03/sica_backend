@@ -1,10 +1,10 @@
 //Requiring modules
 const express = require('express');
-const transfersModel = require('../models/transfers_model');
-const nextId = require('../bl/next_id');
 const cors = require('cors');
-const sendEmail = require('../bl/send_email');
+const transfersModel = require('../models/transfers_model');
 const usersModel = require('../models/users_model');
+const nextId = require('../bl/next_id');
+const sendEmail = require('../bl/send_email');
 
 //Creating app
 const app = express();
@@ -52,15 +52,15 @@ app.post('/transfers/:id', async (req, res) => {
         new: true,
       })
       .exec();
-    
-    const user = await usersModel.findOne({ id: result.requestedBy})
-    
+
+    const requestingUser = await usersModel.findOne({ id: result.requestedBy });
+
     //Send the email with the status of the transfer
     await sendEmail.sendTransferResultEmail({
-      email: user.email,
-      name: user.firstName + ' ' + user.lastName,
-      transferStatus: transferUpdatedInfo.isApproved,
-      transferId: transferUpdatedInfo.transferId,
+      email: requestingUser.email,
+      name: `${requestingUser.firstName} ${requestingUser.lastName}`,
+      transferStatus: result.isApproved === true ? 'Aprobada.' : 'Rechazada.',
+      transferId: result.transferId,
     });
 
     console.log('Traslado actualizado: ', result);
@@ -103,6 +103,20 @@ app.get('/transfers/sort/by-id', async (req, res) => {
     const transfers = await transfersModel
       .find({ isApproved: true })
       .sort({ transferId: 1 })
+      .exec();
+    res.send(transfers);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+//Fetching all transfers by id
+app.get('/transfers/sort/by-creation-date', async (req, res) => {
+  try {
+    console.log('Attending the GET route: /transfers/sort/by-creation-date');
+    const transfers = await transfersModel
+      .find({ isApproved: true })
+      .sort({ creationDate: 1 })
       .exec();
     res.send(transfers);
   } catch (error) {
